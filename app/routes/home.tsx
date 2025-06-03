@@ -1,13 +1,28 @@
+import { useState } from "react";
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
-
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
-}
 
 export default function Home() {
-  return <Welcome />;
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
+
+  return (
+    <div>
+      <button
+        onClick={() => {
+          const controller = new AbortController();
+
+          fetch("/stream", {
+            signal: controller.signal,
+          });
+
+          setAbortController(controller);
+        }}
+      >
+        Stream
+      </button>
+      {abortController && (
+        <button onClick={() => abortController.abort()}>Abort</button>
+      )}
+    </div>
+  );
 }
